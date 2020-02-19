@@ -1,0 +1,62 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: d1e490f57668d4146c950c8e9b77e748e46b0ae3bc2bb011e013419350212f00
+
+name:           calculus
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/markt/calculus#readme>
+homepage:       https://github.com/markt/calculus#readme
+bug-reports:    https://github.com/markt/calculus/issues
+author:         Mark Taylor and Almas Abdibayev
+maintainer:     mark.a.taylor.20@dartmouth.edu
+copyright:      2020 Mark Taylor and Almas Abdibayev
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/markt/calculus
+
+library
+  exposed-modules:
+      Lib
+  other-modules:
+      Paths_calculus
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+  default-language: Haskell2010
+
+executable calculus-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_calculus
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , calculus
+  default-language: Haskell2010
+
+test-suite calculus-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_calculus
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , calculus
+  default-language: Haskell2010
