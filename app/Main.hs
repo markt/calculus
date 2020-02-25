@@ -2,7 +2,7 @@ module Main where
 
 import Lib
 import Expressions
-import Parser
+import Parsing
 
 main :: IO ()
 main = someFunc

@@ -33,6 +33,72 @@
   (major1) == 0 && (major2) == 1 && (minor) <= 0)
 #endif /* MIN_VERSION_calculus */
 
+/* package megaparsec-8.0.0 */
+#ifndef VERSION_megaparsec
+#define VERSION_megaparsec "8.0.0"
+#endif /* VERSION_megaparsec */
+#ifndef MIN_VERSION_megaparsec
+#define MIN_VERSION_megaparsec(major1,major2,minor) (\
+  (major1) <  8 || \
+  (major1) == 8 && (major2) <  0 || \
+  (major1) == 8 && (major2) == 0 && (minor) <= 0)
+#endif /* MIN_VERSION_megaparsec */
+
+/* package parser-combinators-1.2.1 */
+#ifndef VERSION_parser_combinators
+#define VERSION_parser_combinators "1.2.1"
+#endif /* VERSION_parser_combinators */
+#ifndef MIN_VERSION_parser_combinators
+#define MIN_VERSION_parser_combinators(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 1)
+#endif /* MIN_VERSION_parser_combinators */
+
+/* package tasty-1.2.3 */
+#ifndef VERSION_tasty
+#define VERSION_tasty "1.2.3"
+#endif /* VERSION_tasty */
+#ifndef MIN_VERSION_tasty
+#define MIN_VERSION_tasty(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 3)
+#endif /* MIN_VERSION_tasty */
+
+/* package tasty-hunit-0.10.0.2 */
+#ifndef VERSION_tasty_hunit
+#define VERSION_tasty_hunit "0.10.0.2"
+#endif /* VERSION_tasty_hunit */
+#ifndef MIN_VERSION_tasty_hunit
+#define MIN_VERSION_tasty_hunit(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  10 || \
+  (major1) == 0 && (major2) == 10 && (minor) <= 0)
+#endif /* MIN_VERSION_tasty_hunit */
+
+/* package tasty-leancheck-0.0.1 */
+#ifndef VERSION_tasty_leancheck
+#define VERSION_tasty_leancheck "0.0.1"
+#endif /* VERSION_tasty_leancheck */
+#ifndef MIN_VERSION_tasty_leancheck
+#define MIN_VERSION_tasty_leancheck(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  0 || \
+  (major1) == 0 && (major2) == 0 && (minor) <= 1)
+#endif /* MIN_VERSION_tasty_leancheck */
+
+/* package text-1.2.4.0 */
+#ifndef VERSION_text
+#define VERSION_text "1.2.4.0"
+#endif /* VERSION_text */
+#ifndef MIN_VERSION_text
+#define MIN_VERSION_text(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 4)
+#endif /* MIN_VERSION_text */
+
 /* tool gcc-4.2.1 */
 #ifndef TOOL_VERSION_gcc
 #define TOOL_VERSION_gcc "4.2.1"
@@ -122,7 +188,7 @@
 #endif /* MIN_TOOL_VERSION_runghc */
 
 #ifndef CURRENT_COMPONENT_ID
-#define CURRENT_COMPONENT_ID "calculus-0.1.0.0-I260H4WVayWhbsif482HD-calculus-test"
+#define CURRENT_COMPONENT_ID "calculus-0.1.0.0-Jia5F6NKgiAWG1zc1l5ni-calculus-test"
 #endif /* CURRENT_COMPONENT_ID */
 #ifndef CURRENT_PACKAGE_VERSION
 #define CURRENT_PACKAGE_VERSION "0.1.0.0"

@@ -4,7 +4,7 @@ module Expressions where
 -- import Parsing
 import Control.Monad
 import Control.Monad.Combinators.Expr
-import Data.Text (Text, intersperse)
+import Data.List (intersperse)
 import Data.Void
 import Data.Char
 import Text.Megaparsec
@@ -12,7 +12,7 @@ import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
 
 
-type Parser = Parsec Void Text
+type Parser = Parsec Void String
 
 
 -- Datatypes
@@ -29,9 +29,6 @@ type Equation = (Expr, Expr)
 
 data Calculation = Calc Expr [Step]
 data Step = Step LawName Expr
-
-
-
 
 
 
@@ -86,7 +83,7 @@ sc = L.space
 lexeme :: Parser a -> Parser a
 lexeme = L.lexeme sc
 
-symbol :: Text -> Parser Text
+symbol :: String -> Parser String
 symbol = L.symbol sc
 
 parens :: Parser a -> Parser a
@@ -101,8 +98,10 @@ term = ("id" *> pure (Compose []))
            | isDigit d = return (Compose [Var v])
            | otherwise = do {ts <- many (expr <* space);return (Compose [(Con v ts)])}
         more v = return (Compose [Var v])
+
 operatorE = do opr <- operator
                return (\x y -> Compose [Con opr [x,y]])
+
 composeE (Compose as) (Compose bs) = Compose (as ++ bs)
 
 expr :: Parser Expr

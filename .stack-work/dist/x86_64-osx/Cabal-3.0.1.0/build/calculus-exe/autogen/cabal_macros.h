@@ -33,6 +33,39 @@
   (major1) == 0 && (major2) == 1 && (minor) <= 0)
 #endif /* MIN_VERSION_calculus */
 
+/* package megaparsec-8.0.0 */
+#ifndef VERSION_megaparsec
+#define VERSION_megaparsec "8.0.0"
+#endif /* VERSION_megaparsec */
+#ifndef MIN_VERSION_megaparsec
+#define MIN_VERSION_megaparsec(major1,major2,minor) (\
+  (major1) <  8 || \
+  (major1) == 8 && (major2) <  0 || \
+  (major1) == 8 && (major2) == 0 && (minor) <= 0)
+#endif /* MIN_VERSION_megaparsec */
+
+/* package parser-combinators-1.2.1 */
+#ifndef VERSION_parser_combinators
+#define VERSION_parser_combinators "1.2.1"
+#endif /* VERSION_parser_combinators */
+#ifndef MIN_VERSION_parser_combinators
+#define MIN_VERSION_parser_combinators(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 1)
+#endif /* MIN_VERSION_parser_combinators */
+
+/* package text-1.2.4.0 */
+#ifndef VERSION_text
+#define VERSION_text "1.2.4.0"
+#endif /* VERSION_text */
+#ifndef MIN_VERSION_text
+#define MIN_VERSION_text(major1,major2,minor) (\
+  (major1) <  1 || \
+  (major1) == 1 && (major2) <  2 || \
+  (major1) == 1 && (major2) == 2 && (minor) <= 4)
+#endif /* MIN_VERSION_text */
+
 /* tool gcc-4.2.1 */
 #ifndef TOOL_VERSION_gcc
 #define TOOL_VERSION_gcc "4.2.1"
@@ -122,7 +155,7 @@
 #endif /* MIN_TOOL_VERSION_runghc */
 
 #ifndef CURRENT_COMPONENT_ID
-#define CURRENT_COMPONENT_ID "calculus-0.1.0.0-5QO7ckosgnL9NBr4Ganoz5-calculus-exe"
+#define CURRENT_COMPONENT_ID "calculus-0.1.0.0-LEzYR6Jqphk4YcMXDHVEzo-calculus-exe"
 #endif /* CURRENT_COMPONENT_ID */
 #ifndef CURRENT_PACKAGE_VERSION
 #define CURRENT_PACKAGE_VERSION "0.1.0.0"
