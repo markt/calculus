@@ -122,3 +122,5 @@ operatorTable :: [[Operator Parser Expr]]
 operatorTable =
   [ [ InfixL ("." *> space *> pure composeE) ]
   , [ InfixL operatorE ]
+  ]
+
