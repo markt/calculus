@@ -27,7 +27,7 @@ source-repository head
 
 library
   exposed-modules:
-      Expressions
+      Expressions, Printing
   other-modules:
       Paths_calculus
   hs-source-dirs:
