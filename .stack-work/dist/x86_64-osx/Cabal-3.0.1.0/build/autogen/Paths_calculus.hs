@@ -30,7 +30,7 @@ version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
 bindir     = "/Users/rednecked_crake/calculus/.stack-work/install/x86_64-osx/0a0353c6408bba279ec20f174eb84e8c9b204e64029564ea28a6046834fe3a99/8.8.2/bin"
-libdir     = "/Users/rednecked_crake/calculus/.stack-work/install/x86_64-osx/0a0353c6408bba279ec20f174eb84e8c9b204e64029564ea28a6046834fe3a99/8.8.2/lib/x86_64-osx-ghc-8.8.2/calculus-0.1.0.0-2RB7WJDDgL5CPBEluWgTy2"
+libdir     = "/Users/rednecked_crake/calculus/.stack-work/install/x86_64-osx/0a0353c6408bba279ec20f174eb84e8c9b204e64029564ea28a6046834fe3a99/8.8.2/lib/x86_64-osx-ghc-8.8.2/calculus-0.1.0.0-9VAwd7rXZ2A2YIVWuRkCXV"
 dynlibdir  = "/Users/rednecked_crake/calculus/.stack-work/install/x86_64-osx/0a0353c6408bba279ec20f174eb84e8c9b204e64029564ea28a6046834fe3a99/8.8.2/lib/x86_64-osx-ghc-8.8.2"
 datadir    = "/Users/rednecked_crake/calculus/.stack-work/install/x86_64-osx/0a0353c6408bba279ec20f174eb84e8c9b204e64029564ea28a6046834fe3a99/8.8.2/share/x86_64-osx-ghc-8.8.2/calculus-0.1.0.0"
 libexecdir = "/Users/rednecked_crake/calculus/.stack-work/install/x86_64-osx/0a0353c6408bba279ec20f174eb84e8c9b204e64029564ea28a6046834fe3a99/8.8.2/libexec/x86_64-osx-ghc-8.8.2/calculus-0.1.0.0"

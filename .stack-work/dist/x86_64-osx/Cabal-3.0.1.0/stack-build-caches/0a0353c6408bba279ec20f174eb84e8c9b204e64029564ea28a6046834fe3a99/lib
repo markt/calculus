@@ -1,24 +1,20 @@
 /Users/rednecked_crake/calculus/ChangeLog.md:
   hash: 874f33563125619a7a5cb567ebe523c59258662d69858d78d24d947b275f9c6c
   size: 12
-  modtime: 1582652662
+  modtime: 1582734925
 /Users/rednecked_crake/calculus/src/Expressions.hs:
-  hash: 067a6a9b9341a421918bcc9336b9011e560e842f3d95d19c4e05fc1cc54ec044
-  size: 2970
-  modtime: 1582654118
-/Users/rednecked_crake/calculus/src/Lib.hs:
-  hash: 11d6d255cb397fa45980eb516ea685146565d9de2108c4eea356ea41db8364be
-  size: 88
-  modtime: 1582652126
+  hash: 8ce9f63078927800283ffb3286ed2e73f4e5515c93faa569bc089b564c38b14a
+  size: 2546
+  modtime: 1582735119
+/Users/rednecked_crake/calculus/src/Printing.hs:
+  hash: 88a244703099d47b3aebb693906d7891a8c9ff3db6b05fdbe6daf73cc3ee2781
+  size: 1243
+  modtime: 1582735317
 /Users/rednecked_crake/calculus/README.md:
   hash: c22381b1288aa33a3906d897764e99c42dad7f276f97ef175105503ed60d0338
   size: 373
-  modtime: 1582652126
-/Users/rednecked_crake/calculus/src/Parsing.hs:
-  hash: f1f999bf7eba0ee7e8304595bf358cd8519500341b7ce3d1bf87de2536cdf1c6
-  size: 4049
-  modtime: 1582652126
+  modtime: 1582734925
 /Users/rednecked_crake/calculus/calculus.cabal:
-  hash: a4a055c24e84e969bbb102bc5c404e5611d75d92c6b22b86b000b4ebfa34a997
-  size: 1746
-  modtime: 1582653074
+  hash: 2261579f0aab1214b12ecb6f2a3a72a1b643543673e5e1300b014e60fb06d1c5
+  size: 1742
+  modtime: 1582735262
