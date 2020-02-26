@@ -87,7 +87,8 @@ symbol :: String -> Parser String
 symbol = L.symbol sc
 
 parens :: Parser a -> Parser a
-parens = between (symbol "(") (symbol ")")
+parens x = string "(" *> x <* string ")" <* space
+-- parens = between (symbol "(") (symbol ")")
 
 term :: Parser Expr
 term = ("id" *> pure (Compose []))
@@ -104,11 +105,20 @@ operatorE = do opr <- operator
 
 composeE (Compose as) (Compose bs) = Compose (as ++ bs)
 
+-- applicationE f e = Compose [Con f [e]]
+-- applicationE f e = do {f <- function; e <- expr; return (Compose [Con f [e]])}
+
+function :: Parser String
+function = sin <|> cos
+  where
+    sin = string "sin"
+    cos = string "cos"
+
 expr :: Parser Expr
 expr = makeExprParser term operatorTable <?> "expression"
 
 atom :: Parser String
-atom = ((:) <$> letterChar <*> some alphaNumChar) <* space
+atom = ((:) <$> letterChar <*> many alphaNumChar) <* space
 
 operator :: Parser String
 operator = try (do op <- some (satisfy symbolic) <* space
@@ -117,9 +127,18 @@ operator = try (do op <- some (satisfy symbolic) <* space
     where symbolic = (`elem` (opsymbols::[Char]))
           opsymbols = "!@#$%^&*()_+-={}[]:\"|;'\\,./<>?`~±§"
 
+-- TODO add function application support e.g. sin(x)
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
   [ [ InfixL ("." *> space *> pure composeE) ]
   , [ InfixL operatorE ]
   ]
+
+
+law :: Parser Law
+law = do {name <- upto ':'; e1 <- expr; e2 <- expr; return (Law name (e1,e2))}
+
+upto :: Char -> Parser String
+upto c = (char c *> return []) <|> ((:) <$> anySingle <*> upto c)
+
 
