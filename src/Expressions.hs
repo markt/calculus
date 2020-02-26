@@ -20,6 +20,7 @@ type Parser = Parsec Void String
 newtype Expr = Compose [Atom] deriving Eq
 data Atom
     = Var String
+    | Val Int
     | Con String [Expr] deriving Eq
 
 data Law = Law LawName Equation
@@ -140,5 +141,8 @@ law = do {name <- upto ':'; e1 <- expr; e2 <- expr; return (Law name (e1,e2))}
 
 upto :: Char -> Parser String
 upto c = (char c *> return []) <|> ((:) <$> anySingle <*> upto c)
+
+
+
 
 

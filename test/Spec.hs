@@ -1,11 +1,12 @@
 import Test.Tasty
 import Test.Tasty.HUnit
 import Test.Tasty.LeanCheck as LC
+import Text.Megaparsec
 
 
 import Lib
 import Expressions
-import Parsing
+-- import Parsing
 
 
 main :: IO ()
@@ -18,5 +19,18 @@ test1 :: TestTree--, test2, test3, test4, test5, test6, test7, test8, test9, tes
     Correctness tests: 5
 -}
 
+exampleVar :: Expr
+exampleVar = Compose [Var "f1"]
+
+exampleLaw :: Law
+exampleLaw = Law "zero" (Compose [Con "+" [Compose [Var "x"], Compose [Val 0]]], Compose [Var "x"])
+
+
+
+parseG :: String -> Expr
+parseG str = case runParser expr "" str of
+	Left er -> Compose []
+	Right e -> e
+
 test1 =
-  LC.testProperty "add Zero x = x" (5 == 5)
+  LC.testProperty "var test" (exampleVar == (parseG "f1"))
