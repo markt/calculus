@@ -1,7 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Expressions where
 
--- import Parsing
 import Control.Monad
 import Control.Monad.Combinators.Expr
 import Data.List (intersperse)
