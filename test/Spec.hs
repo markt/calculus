@@ -4,9 +4,8 @@ import Test.Tasty.LeanCheck as LC
 import Text.Megaparsec
 
 
-import Lib
 import Expressions
--- import Parsing
+import Printing
 
 
 main :: IO ()
