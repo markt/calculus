@@ -68,74 +68,38 @@ term = parens expr
 pInteger :: Parser Expr
 pInteger = Val <$> lexeme L.decimal
 
--- term :: Parser Expr
--- term = ("id" *> pure (Compose []))
---        <|> parens expr
---        <|> (atom >>= more) <?> "term"
---        where 
---         more v@(_:d:_)
---            | isDigit d = return (Compose [Var v])
---            | otherwise = do {ts <- many (expr <* space);return (Compose [(Con v ts)])}
---         more v = return (Compose [Var v])
-
--- operatorE = do opr <- operator
---                return (\x y -> Compose [Con opr [x,y]])
-
--- composeE (Compose as) (Compose bs) = Compose (as ++ bs)
-
--- applicationE f e = Compose [Con f [e]]
--- applicationE f e = do {f <- function; e <- expr; return (Compose [Con f [e]])}
-
--- function :: Parser String
--- function = sin <|> cos
---   where
---     sin = string "sin"
---     cos = string "cos"
-
 expr :: Parser Expr
 expr = makeExprParser term operatorTable <?> "expression"
 
 atom :: Parser String
 atom = ((:) <$> letterChar <*> many alphaNumChar) <* space
 
--- operator :: Parser String
--- operator = try (do op <- some (satisfy symbolic) <* space
---                    guard (op /= "." && op /= "=")
---                    return op)
---     where symbolic = (`elem` (opsymbols::[Char]))
---           opsymbols = "!@#$%^&*_+-=:\"|;'\\,./<>?`~±§"
+
 
 -- TODO add function application support e.g. sin(x)
 -- consider only apply for unary, makeexprparser for binary
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
-  [ [ prefix "sin" sinF]
-  , [ binary "^" pow ]
-  , [ binary  "*" prod          --[ InfixL (prod <$ symbol "*")
-    , binary  "/"  divi  ]
-  , [ binary  "+"  add
-    , binary  "-"  sub ]
+  [ [ prefix "sin" (func "sin")]
+  , [ binary "^" (funcc "^") ]
+  , [ binary  "*" (funcc "*")          --[ InfixL (prod <$ symbol "*")
+    , binary  "/"  (funcc "/")  ]
+  , [ binary  "+"  (funcc "+")
+    , binary  "-"  (funcc "-") ]
   ]
 
-sinF a = Con "sin" [x]
+
+func::String -> Expr -> Expr
+func name a = Con name [x]
   where
     x = case a of
           (Var a) -> (Var a)
           (Val a) -> (Val a)
           (Con a as) -> (Con a as)
 
-pow a b = Con "^" [x,y]
-  where
-    x = case a of
-          (Var a) -> (Var a)
-          (Val a) -> (Val a)
-          (Con a as) -> (Con a as)
-    y = case b of
-          (Var b) -> (Var b)
-          (Val b) -> (Val b)
-          (Con b bs) -> (Con b bs)
 
-prod a b = Con "*" [x,y]
+funcc::String -> Expr -> Expr -> Expr
+funcc name a b = Con name [x,y]
   where
     x = case a of
           (Var a) -> (Var a)
@@ -146,61 +110,7 @@ prod a b = Con "*" [x,y]
           (Val b) -> (Val b)
           (Con b bs) -> (Con b bs)
 
-divi a b = Con "/" [x,y]
-  where
-    x = case a of
-          (Var a) -> (Var a)
-          (Val a) -> (Val a)
-          (Con a as) -> (Con a as)
-    y = case b of
-          (Var b) -> (Var b)
-          (Val b) -> (Val b)
-          (Con b bs) -> (Con b bs)
 
-add a b = Con "+" [x,y]
-  where
-    x = case a of
-          (Var a) -> (Var a)
-          (Val a) -> (Val a)
-          (Con a as) -> (Con a as)
-    y = case b of
-          (Var b) -> (Var b)
-          (Val b) -> (Val b)
-          (Con b bs) -> (Con b bs)
-
-sub a b = Con "-" [x,y]
-  where
-    x = case a of
-          (Var a) -> (Var a)
-          (Val a) -> (Val a)
-          (Con a as) -> (Con a as)
-    y = case b of
-          (Var b) -> (Var b)
-          (Val b) -> (Val b)
-          (Con b bs) -> (Con b bs)
-
--- prod a (Var b) = case a of
---                       (Var a) -> Con "*" [(Var a),(Var b)]
---                       (Val a) -> Con "*" [(Val a),(Var b)]
-
--- prod a (Var b) = Con "*" [a,(Var b)]
---                  where a = (Var a)
-
--- prod (Var a) (Var b) = Con "*" [(Var a),(Var b)]
--- prod (Val a) (Val b) = Val (a * b)
--- prod (Con a as) (Con b bs) = Con "*" [(Con a as),(Con b bs)]
-
--- divi (Var a) (Var b) = Con "/" [(Var a),(Var b)]
--- add (Var a) (Var b) = Con "+" [(Var a),(Var b)]
--- sub (Var a) (Var b) = Con "-" [(Var a),(Var b)]
-
--- prod (Var a) (Var b) = Con "*" [(Var a),(Var b)]
--- divi (Var a) (Var b) = Con "/" [(Var a),(Var b)]
--- add (Var a) (Var b) = Con "+" [(Var a),(Var b)]
--- sub (Var a) (Var b) = Con "-" [(Var a),(Var b)]
-
--- prod = do f <- symbol
---        return (\x y -> Con f [x,y])
 
 binary  name f = InfixL  (f <$ symbol name)
 prefix  name f = Prefix  (f <$ symbol name)
