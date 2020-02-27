@@ -12,21 +12,32 @@ import qualified Text.Megaparsec.Char.Lexer as L
 
 import Expressions
 
-showExpr :: Int -> Expr -> ShowS
-showExpr _ (Compose []) = showString "id"
-showExpr p (Compose [a]) = showAtom p a
-showExpr p (Compose as)
- = showParen (p>0)
-    (showSep " . " (showAtom 1) as)
 
-showAtom :: Int -> Atom -> ShowS
-showAtom _ (Var v) = showString v
-showAtom _ (Con f []) = showString f
-showAtom p (Con f [e1,e2]) | isOp f
+showExpr :: Int -> Expr -> ShowS
+showExpr _ (Var v) = showString v
+showExpr _ (Val v) = showString (show v)
+showExpr _ (Con f []) = showString f
+showExpr p (Con f [e1,e2]) | isOp f
  = showParen (p>0) (showExpr 1 e1 . showSpace . showString f . showSpace . showExpr 1 e2)
-showAtom p (Con f es)
+showExpr p (Con f es)
  = showParen (p>1)
     (showString f . showSpace . showSep " " (showExpr 2) es)
+
+-- showExpr :: Int -> Expr -> ShowS
+-- showExpr _ (Compose []) = showString "id"
+-- showExpr p (Compose [a]) = showAtom p a
+-- showExpr p (Compose as)
+--  = showParen (p>0)
+--     (showSep " . " (showAtom 1) as)
+
+-- showAtom :: Int -> Atom -> ShowS
+-- showAtom _ (Var v) = showString v
+-- showAtom _ (Con f []) = showString f
+-- showAtom p (Con f [e1,e2]) | isOp f
+--  = showParen (p>0) (showExpr 1 e1 . showSpace . showString f . showSpace . showExpr 1 e2)
+-- showAtom p (Con f es)
+--  = showParen (p>1)
+--     (showString f . showSpace . showSep " " (showExpr 2) es)
 
 showSep :: String -> (a -> ShowS) -> [a] -> ShowS
 showSep sep f = compose . intersperse (showString sep) . map f
