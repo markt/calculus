@@ -19,17 +19,17 @@ test1 :: TestTree--, test2, test3, test4, test5, test6, test7, test8, test9, tes
 -}
 
 exampleVar :: Expr
-exampleVar = Compose [Var "f1"]
+exampleVar = Var "f1"
 
-exampleLaw :: Law
-exampleLaw = Law "zero" (Compose [Con "+" [Compose [Var "x"], Compose [Val 0]]], Compose [Var "x"])
+--exampleLaw :: Law
+--exampleLaw = Law "zero" (Compose [Con "+" [Compose [Var "x"], Compose [Val 0]]], Compose [Var "x"])
 
 
 
 parseG :: String -> Expr
 parseG str = case runParser expr "" str of
-	Left er -> Compose []
-	Right e -> e
+    Left er -> Var []
+    Right e -> e
 
 test1 =
   LC.testProperty "var test" (exampleVar == (parseG "f1"))

@@ -20,7 +20,7 @@ type Parser = Parsec Void String
 data Expr
     = Var String
     | Val Int
-    | Con String [Expr] deriving Eq
+    | Con String [Expr] deriving (Show, Eq)
 -- TODO: add deriv type: Deriv String [Expr]
 
 data Law = Law LawName Equation
@@ -90,25 +90,11 @@ operatorTable =
 
 
 func::String -> Expr -> Expr
-func name a = Con name [x]
-  where
-    x = case a of
-          (Var a) -> (Var a)
-          (Val a) -> (Val a)
-          (Con a as) -> (Con a as)
+func name a = Con name [a]
 
 
 funcc::String -> Expr -> Expr -> Expr
-funcc name a b = Con name [x,y]
-  where
-    x = case a of
-          (Var a) -> (Var a)
-          (Val a) -> (Val a)
-          (Con a as) -> (Con a as)
-    y = case b of
-          (Var b) -> (Var b)
-          (Val b) -> (Val b)
-          (Con b bs) -> (Con b bs)
+funcc name a b = Con name [a,b]
 
 
 
