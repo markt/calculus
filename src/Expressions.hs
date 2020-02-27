@@ -23,7 +23,7 @@ data Expr
     | Con String [Expr] deriving (Show, Eq)
 -- TODO: add deriv type: Deriv String [Expr]
 
-data Law = Law LawName Equation
+data Law = Law LawName Equation deriving (Show, Eq)
 type LawName = String
 type Equation = (Expr, Expr)
 
@@ -102,7 +102,8 @@ binary  name f = InfixL  (f <$ symbol name)
 prefix  name f = Prefix  (f <$ symbol name)
 
 law :: Parser Law
-law = do {name <- upto ':'; e1 <- expr; e2 <- expr; return (Law name (e1,e2))}
+law = do {name <- upto ':'; space; e1 <- expr; space; char '='; space; e2 <- expr; space; return (Law name (e1,e2))}
+
 
 upto :: Char -> Parser String
 upto c = (char c *> return []) <|> ((:) <$> anySingle <*> upto c)

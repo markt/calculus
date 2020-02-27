@@ -31,5 +31,11 @@ parseG str = case runParser expr "" str of
     Left er -> Var []
     Right e -> e
 
+
+parseL :: String -> Law
+parseL str = case runParser law "" str of
+    Left er -> Law [] (Var [], Var [])
+    Right e -> e
+
 test1 =
   LC.testProperty "var test" (exampleVar == (parseG "f1"))
