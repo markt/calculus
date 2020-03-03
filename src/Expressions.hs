@@ -9,6 +9,7 @@ import Data.Char
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
+import Data.Maybe
 
 
 type Parser = Parsec Void String
@@ -23,6 +24,10 @@ data Expr
     | Con String [Expr] deriving (Show, Eq)
 -- TODO: add deriv type: Deriv String [Expr]
 
+-- data Law = Law String Equation deriving (Show, Eq)
+-- type Equation = (Expr, Expr)
+
+
 data Law = Law LawName Equation deriving (Show, Eq)
 type LawName = String
 type Equation = (Expr, Expr)
@@ -30,7 +35,17 @@ type Equation = (Expr, Expr)
 
 data Calculation = Calc Expr [Step]
 data Step = Step LawName Expr
+-- data Step = Step String Expr
 
+
+type Subst = [(Expr,Expr)]
+-- type VarName = String
+
+emptySub = []
+unitSub v e = [(v,e)]
+
+-- unitSub :: Expr -> Expr -> Subst
+-- unitSub v e = [(v,e)]
 
 
 
@@ -108,6 +123,34 @@ law = do {name <- upto ':'; space; e1 <- expr; space; char '='; space; e2 <- exp
 upto :: Char -> Parser String
 upto c = (char c *> return []) <|> ((:) <$> anySingle <*> upto c)
 
+splits :: [a] -> [([a],[a])]
+splits [] = [([],[])]
+splits (a:as) = [([],a:as)] ++ [(a:as1,as2) | (as1,as2) <- splitsH as]
+splitsH as = [(take n as,drop n as) | n <- [0..length as]]
+
+splitsN :: Int -> [a] -> [[[a]]]
+splitsN 0 [] = [[]]
+splitsN 0 as = []
+splitsN n as = [bs : bss | (bs,cs) <- splits as, bss <- splitsN (n-1) cs]
+
+
+splitsAll :: [a] -> [[[a]]]
+splitsAll as = splitsN (length as) as
+
+
+
+
+match :: (Expr,Expr) -> [Subst]
+match (Var v,e) = [unitSub (Var v) e]
+
+
+
+apply :: Subst -> Expr -> Expr
+apply sub e = binding sub e
+
+
+binding :: Subst -> Expr -> Expr
+binding sub e = fromJust (lookup e sub)
 
 
 
