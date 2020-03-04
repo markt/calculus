@@ -156,22 +156,31 @@ match (Con v1 e1,Con v2 e2)
 match _ = []
 
 unify :: Subst -> Subst -> [Subst]
-unify sub1 sub2 = if compatible sub1 sub2
-                  then [union sub1 sub2]
-                  else []
+unify sub1 sub2 = [sub1 ++ sub2 | compatible sub1 sub2]
+-- unify sub1 sub2 = if compatible sub1 sub2
+--                   then [union sub1 sub2]
+--                   else []
+
+compatible :: Subst -> Subst -> Bool
+compatible subst1 subst2 = and [e1 == e2 | (v1,e1)<-subst1, (v2,e2)<-subst2, v1 == v2]
 
 union :: Subst -> Subst -> Subst
 union [] sub2 = sub2
 union sub1 [] = sub1
-union x:sub1 y:sub2 = x:y:union sub1 sub2
+union (x:sub1) (y:sub2) = x:y:union sub1 sub2
 
 
-unifyAll :: [Subst] -> Subst
+unifyAll :: [Subst] -> [Subst]
 unifyAll = foldr f [emptySub]
   where f sub subs = concatMap (unify sub) subs
 
-
+combine :: [[Subst]] -> [Subst]
 combine = concatMap unifyAll . cp
+
+cp :: [[a]] -> [[a]]
+cp [] = [[]]
+cp (xs:xss) = [x:ys | x <- xs, ys <- yss]
+                 where yss = cp xss
 
 
 apply :: Subst -> Expr -> Expr
@@ -181,6 +190,18 @@ apply sub e = binding sub e
 binding :: Subst -> Expr -> Expr
 binding sub e = fromJust (lookup e sub)
 
+
+rewrites :: Equation -> Expr -> [Expr]
+rewrites eqn (Var v) = []
+rewrites eqn (Con v es)
+       = map (Con v) (anyOne (rewrites eqn) es)
+
+
+
+anyOne :: (a -> [a]) -> [a] -> [[a]]
+anyOne f []     = []
+anyOne f (x:xs) = [x':xs | x' <- f x] ++
+                  [x:xs' | xs' <- anyOne f xs]
 
 
 -- apply sub (Var v) = binding sub (Var v)
