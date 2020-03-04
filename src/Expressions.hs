@@ -140,9 +140,38 @@ splitsAll as = splitsN (length as) as
 
 
 
+-- allignments :: (Expr,Expr) -> [[(Expr,Expr)]]
+-- allignments ((Con v1 e1),(Con v2 e2)) = [zip e1 (map (Con v1) e2s) | e2s <- splitsN n e2]
+--                                       where n = length e1
+
+
+-- match :: (Expr,Expr) -> [Subst]
+-- match = concatMap (map matchE) . allignments
+-- match (Var v,e) = [unitSub (Var v) e]
+
 match :: (Expr,Expr) -> [Subst]
 match (Var v,e) = [unitSub (Var v) e]
+match (Con v1 e1,Con v2 e2)
+  | v1==v2 = combine (map Expressions.match (zip e1 e2))
+match _ = []
 
+unify :: Subst -> Subst -> [Subst]
+unify sub1 sub2 = if compatible sub1 sub2
+                  then [union sub1 sub2]
+                  else []
+
+union :: Subst -> Subst -> Subst
+union [] sub2 = sub2
+union sub1 [] = sub1
+union x:sub1 y:sub2 = x:y:union sub1 sub2
+
+
+unifyAll :: [Subst] -> Subst
+unifyAll = foldr f [emptySub]
+  where f sub subs = concatMap (unify sub) subs
+
+
+combine = concatMap unifyAll . cp
 
 
 apply :: Subst -> Expr -> Expr
@@ -154,4 +183,17 @@ binding sub e = fromJust (lookup e sub)
 
 
 
+-- apply sub (Var v) = binding sub (Var v)
+-- apply sub (Con v es) = binding sub (Con v es)
+-- apply sub (Con v es) = Con v (map (apply sub) es)
+-- applyE sub (Var v) = apply sub (Var v)
+-- applyE sub (Con v es) = Con v (map (apply sub) es)
+
+-- apply ([(Var "x",(Con "+" [Var "x", Val 0]))]) (Var "x")
+-- apply ([((Con "+" [Var "x", Val 0]),Var "x")]) (Con "+" [Var "x", Val 0])
+-- apply ([((Con "^" [Var "x", Var "y"]),(Con "*" [Var "y", Var "x"]))]) (Var "x")
+-- apply ([(Var "sin",(Con ""))])
+
+-- match (Con v1 es1, Con v2 es2) | v1 == v2
+--   = combine (map match (zip es1 es2))
 
