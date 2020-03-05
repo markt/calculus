@@ -13,15 +13,48 @@ import qualified Text.Megaparsec.Char.Lexer as L
 import Expressions
 
 
-showExpr :: Int -> Expr -> ShowS
-showExpr _ (Var v) = showString v
-showExpr _ (Val v) = showString (show v)
-showExpr _ (Con f []) = showString f
-showExpr p (Con f [e1,e2]) | isOp f
- = showParen (p>0) (showExpr 1 e1 . showSpace . showString f . showSpace . showExpr 1 e2)
-showExpr p (Con f es)
- = showParen (p>1)
-    (showString f . showSpace . showSep " " (showExpr 2) es)
+
+showCalculation :: Calculation -> ShowS
+showCalculation (Calc e steps)
+    = showString "\n " .
+      (showExpr e) .
+      showChar '\n' .
+      compose (map showStep steps)
+-- compose = foldr (.) id
+
+showStep :: Step -> ShowS
+showStep (Step law e)
+    = showString "=   {" .
+      showString law .
+      showString "}\n " .
+      (showExpr e) .
+      showChar '\n'
+
+
+
+showExpr :: Expr -> ShowS
+showExpr (Var v) = showString v
+showExpr (Val v) = showString (show v)
+showExpr (Con f []) = showString f
+showExpr (Con f [e1,e2]) | isOp f
+ = showParen True (showExpr e1 . showSpace . showString f . showSpace . showExpr e2)
+showExpr (Con f es)
+ = showParen True
+    (showString f . showSpace . showSep " " (showExpr) es)
+
+
+
+
+
+-- showExpr :: Int -> Expr -> ShowS
+-- showExpr _ (Var v) = showString v
+-- showExpr _ (Val v) = showString (show v)
+-- showExpr _ (Con f []) = showString f
+-- showExpr p (Con f [e1,e2]) | isOp f
+--  = showParen (p>0) (showExpr 1 e1 . showSpace . showString f . showSpace . showExpr 1 e2)
+-- showExpr p (Con f es)
+--  = showParen (p>1)
+--     (showString f . showSpace . showSep " " (showExpr 2) es)
 
 -- showExpr :: Int -> Expr -> ShowS
 -- showExpr _ (Compose []) = showString "id"
@@ -52,7 +85,29 @@ isOp :: [Char] -> Bool
 isOp = not . all isAlphaNum
 
 
+
 parseE :: String -> IO ()
 parseE str = case parse expr "" str of
     Left er -> putStr (errorBundlePretty er)
-    Right e -> putStrLn (showExpr 0 e "")
+    Right e -> putStrLn (showExpr e "")
+
+-- parseE :: String -> IO ()
+-- parseE str = case parse expr "" str of
+--     Left er -> putStr (errorBundlePretty er)
+--     Right e -> putStrLn (showExpr 0 e "")
+
+
+showLaw :: Law -> ShowS
+showLaw (Law s (e1,e2)) = showString s
+
+parseL :: String -> Law
+parseL str = case runParser law "" str of
+    Left er -> Law [] (Var [], Var [])
+    Right e -> e
+
+-- basically just used to demonstrate law printing
+parseLN :: String -> IO ()
+parseLN str = case runParser law "" str of
+    Left er -> putStrLn (errorBundlePretty er)
+    Right e -> putStrLn (showLaw e "")
+

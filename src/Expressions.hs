@@ -12,6 +12,7 @@ import qualified Text.Megaparsec.Char.Lexer as L
 import Data.Maybe
 
 
+
 type Parser = Parsec Void String
 
 
@@ -21,14 +22,14 @@ type Parser = Parsec Void String
 data Expr
     = Var String
     | Val Int
-    | Con String [Expr] deriving (Show, Eq)
+    | Con String [Expr] deriving (Eq)
 -- TODO: add deriv type: Deriv String [Expr]
 
 -- data Law = Law String Equation deriving (Show, Eq)
 -- type Equation = (Expr, Expr)
 
 
-data Law = Law LawName Equation deriving (Show, Eq)
+data Law = Law LawName Equation deriving (Eq)
 type LawName = String
 type Equation = (Expr, Expr)
 
@@ -36,6 +37,22 @@ type Equation = (Expr, Expr)
 data Calculation = Calc Expr [Step]
 data Step = Step LawName Expr
 -- data Step = Step String Expr
+
+
+
+-- instance Show Expr where
+--   show (Var s) = "Var " ++  s
+--   show (Val i) = show i
+--   show (Con v es) = v ++ " (" ++ (foldl (++) "" (map ((" " ++) . show) es)) ++ ")"
+
+
+-- instance Show Step where
+--   show (Step l e) = "= {" ++ l ++ "}\n" ++ show e ++ "\n"
+
+-- instance Show Calculation where
+--   show (Calc e steps) = "\n " ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
+
+
 
 
 type Subst = [(Expr,Expr)]
@@ -151,6 +168,7 @@ splitsAll as = splitsN (length as) as
 
 match :: (Expr,Expr) -> [Subst]
 match (Var v,e) = [unitSub (Var v) e]
+match (Val v1,Val v2) = [[] | v1 == v2]
 match (Con v1 e1,Con v2 e2)
   | v1==v2 = combine (map Expressions.match (zip e1 e2))
 match _ = []
@@ -193,8 +211,14 @@ binding sub e = fromJust (lookup e sub)
 
 rewrites :: Equation -> Expr -> [Expr]
 rewrites eqn (Var v) = []
+rewrites eqn (Val v) = tlrewrite eqn (Val v)
 rewrites eqn (Con v es)
-       = map (Con v) (anyOne (rewrites eqn) es)
+       = tlrewrite eqn (Con v es)  ++  map (Con v) (anyOne (rewrites eqn) es)
+
+tlrewrite :: Equation -> Expr -> [Expr]
+tlrewrite (e1, e2) e = [apply sub e2 | sub <- subs]
+                        where subs = Expressions.match (e1,e)
+
 
 
 
@@ -202,6 +226,29 @@ anyOne :: (a -> [a]) -> [a] -> [[a]]
 anyOne f []     = []
 anyOne f (x:xs) = [x':xs | x' <- f x] ++
                   [x:xs' | xs' <- anyOne f xs]
+
+
+
+
+steps :: Calculation -> [Step]
+steps (Calc _ s) = s
+
+calculate :: [Law] -> Expr -> Calculation
+calculate laws e = Calc e (manyStep rws e)
+  where rws e = [(Step name e')
+                | Law name eqn <- laws,
+                  e' <- rewrites eqn e,
+                  e' /= e]
+
+manyStep :: (Expr -> [Step]) -> Expr -> [Step]
+manyStep rws e
+  = if null steps then []
+    else step : manyStep rws (unpackStep step)
+    where steps = rws e
+          step = head steps
+
+unpackStep :: Step -> Expr
+unpackStep (Step lawname e) = e
 
 
 -- apply sub (Var v) = binding sub (Var v)
