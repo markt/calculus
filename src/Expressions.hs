@@ -22,7 +22,8 @@ type Parser = Parsec Void String
 data Expr
     = Var String
     | Val Int
-    | Con String [Expr] deriving (Eq)
+    | Con String [Expr]
+    | Deriv Expr Expr deriving (Eq)
 -- TODO: add deriv type: Deriv String [Expr]
 
 -- data Law = Law String Equation deriving (Show, Eq)
@@ -41,16 +42,17 @@ data Step = Step LawName Expr
 
 
 instance Show Expr where
- show (Var s) = "Var " ++  s
+ show (Var s) = s
  show (Val i) = show i
- show (Con v es) = v ++ " (" ++ (foldl (++) "" (map ((" " ++) . show) es)) ++ ")"
+ show (Con v es) = " (" ++ show (head es) ++ (foldl (++) "" (map (((" " ++ v ++ " ") ++) . show) (tail es))) ++ ")"
+ show (Deriv v e) = "d/d" ++ show v ++ " " ++ show e
 
 
 instance Show Step where
- show (Step l e) = "= {" ++ l ++ "}\n" ++ show e ++ "\n"
+ show (Step l e) = "=   {" ++ l ++ "}\n" ++ show e ++ "\n"
 
 instance Show Calculation where
- show (Calc e steps) = "\n " ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
+ show (Calc e steps) = "\n" ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
 
 
 instance Show Law where
@@ -90,7 +92,8 @@ parens = between (symbol "(") (symbol ")")
 
 
 term :: Parser Expr
-term = parens expr
+term = deriv
+       <|> parens expr
        <|> pInteger
        <|> (atom >>= more)
        where
@@ -107,6 +110,9 @@ expr = makeExprParser term operatorTable <?> "expression"
 
 atom :: Parser String
 atom = ((:) <$> letterChar <*> many alphaNumChar) <* space
+
+deriv :: Parser Expr
+deriv = do {string "d/d"; v <- atom; e <- expr; return (Deriv (Var v) e)}
 
 
 

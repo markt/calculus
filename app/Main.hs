@@ -12,7 +12,8 @@ readLaws ff = do
   contents <- readFile ff
   let lawStrings = lines contents
   let laws = map (parseL) lawStrings
-  putStrLn ("\n" ++ show laws)
+  -- putStrLn ("\n" ++ show laws)
+  putStrLn ("\n\n\nWelcome to our calculus calculator!\n\nEnter an expression to be solved:")
 
   forever $ do
     x <- getLine
