@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wall #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Expressions where
 
@@ -22,7 +23,28 @@ data Expr
     = Var String
     | Val Int
     | Con String [Expr]
-    | Deriv Expr [Expr] deriving (Eq)
+    | Deriv Expr [Expr] deriving (Eq,Show)
+
+
+{-
+
+instance Show Expr where
+ show (Var s) = s
+ show (Val i) = show i
+ show (Con v [e]) = " (" ++ init (tail (show v)) ++ " " ++ show e ++ ")"
+ show (Con v es) = " (" ++ show (head es) ++ (foldl (++) "" (map (((" " ++ v ++ " ") ++) . show) (tail es))) ++ ")"
+ show (Deriv v e) = "d/d" ++ show v ++ " " ++ show e
+-}
+
+instance Show Step where
+ show (Step l e) = "=   {" ++ l ++ "}\n" ++ show e ++ "\n"
+
+instance Show Calculation where
+ show (Calc e steps) = "\n" ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
+
+
+instance Show Law where
+  show (Law ln eq) = "Law " ++ ln  ++ " " ++ show eq 
 
 
 data Law = Law LawName Equation deriving (Eq)
@@ -37,7 +59,10 @@ data Step = Step LawName Expr
 type Subst = [(Expr,Expr)]
 
 emptySub = []
-unitSub v e = [(v,e)]
+unitSub (Var p) (Const l) = [[(v,e)]]
+unitSub (Var p) _ | p == "p" || p=="q" = []
+unitSub v e = [[(v,e)]]
+
 
 
 -- Parsing
@@ -129,7 +154,7 @@ prefix  name f = Prefix  (f <$ symbol name)
 
 -- match left side of a law (e1) to an expr we are computing
 match :: (Expr,Expr) -> [Subst]
-match (Var v,e) = [unitSub (Var v) e]
+match (Var v,e) = unitSub (Var v) e
 match (Val v1,Val v2) = [[] | v1 == v2]
 match (Con v1 e1,Con v2 e2)
   | v1==v2 = combine (map Expressions.match (zip e1 e2))
@@ -175,11 +200,15 @@ cp (xs:xss) = [x:ys | x <- xs, ys <- yss]
 -- once we found a substition, apply the right side of the law to the expression we are computing
 apply :: Subst -> Expr -> Expr
 apply sub (Val v) = (Val v)
-apply sub e = binding sub e
+apply sub (Con v es) = Con v (map (apply sub) es)
+apply sub (Deriv v es) = error "Cannot do subst in deriv yet (line 201)"
+apply sub (Var e) = binding sub (Var e)
 
 -- looks up a in [(a,b)], and then if found returns b, otherwise throws an error
 binding :: Subst -> Expr -> Expr
-binding sub e = fromJust (lookup e sub)
+binding sub e = case (lookup e sub) of
+                  Nothing -> error ("Could not find a way of substituting "++show e)
+                  Just v -> v
 
 
 rewrites :: Equation -> Expr -> [Expr]
