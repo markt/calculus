@@ -22,7 +22,7 @@ data Expr
     = Var String
     | Val Int
     | Con String [Expr]
-    | Deriv Expr Expr deriving (Eq)
+    | Deriv Expr [Expr] deriving (Eq)
 
 
 data Law = Law LawName Equation deriving (Eq)
@@ -89,7 +89,7 @@ atom = ((:) <$> letterChar <*> many alphaNumChar) <* space
 
 -- parse derivative
 deriv :: Parser Expr
-deriv = do {string "d/d"; v <- atom; e <- expr; return (Deriv (Var v) e)}
+deriv = do {string "d/d"; v <- atom; es <- many (expr <* space); return (Deriv (Var v) es)}
 
 -- parser that parses any string until char c
 upto :: Char -> Parser String
@@ -104,7 +104,8 @@ law = do {name <- upto ':'; space; e1 <- expr; space; char '='; space; e2 <- exp
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
   [ [ prefix "sin" (func "sin")
-    , prefix "cos" (func "cos") ]
+    , prefix "cos" (func "cos")
+    , prefix "ln" (func "ln") ]
   , [ binary "^" (funcc "^") ]
   , [ binary  "*" (funcc "*")          --[ InfixL (prod <$ symbol "*")
     , binary  "/"  (funcc "/")  ]
@@ -132,8 +133,13 @@ match (Var v,e) = [unitSub (Var v) e]
 match (Val v1,Val v2) = [[] | v1 == v2]
 match (Con v1 e1,Con v2 e2)
   | v1==v2 = combine (map Expressions.match (zip e1 e2))
-match (Deriv v1 e1,Deriv v2 e2) = Expressions.match (e1,e2)
+-- match (Deriv v1 e1,Deriv v2 e2) = map (derivWrap v1 v2) (Expressions.match (e1,e2))
+  -- [ [(Deriv v1 s1, Deriv v2 s2)] | [(s1,s2)]<-(Expressions.match (e1,e2))]
+match (Deriv v1 es1,Deriv v2 es2) = combine (map Expressions.match (zip es1 es2))
 match _ = []
+
+-- derivWrap :: Expr -> Expr -> Subst -> Subst
+-- derivWrap v1 v2 [(e1,e2)] = [(Deriv v1 e1,Deriv v2 e2)]
 
 
 -- check if two sets of subs are compatible, i.e. they are not when two respective subs refer to the same variable with different expr
@@ -168,6 +174,7 @@ cp (xs:xss) = [x:ys | x <- xs, ys <- yss]
 
 -- once we found a substition, apply the right side of the law to the expression we are computing
 apply :: Subst -> Expr -> Expr
+apply sub (Val v) = (Val v)
 apply sub e = binding sub e
 
 -- looks up a in [(a,b)], and then if found returns b, otherwise throws an error
@@ -180,7 +187,9 @@ rewrites eqn (Var v) = []
 rewrites eqn (Val v) = tlrewrite eqn (Val v)
 rewrites eqn (Con v es)
        = tlrewrite eqn (Con v es)  ++  map (Con v) (anyOne (rewrites eqn) es)
-rewrites eqn (Deriv v e) = tlrewrite eqn (Deriv v e)
+rewrites eqn (Deriv v es)
+       = tlrewrite eqn (Deriv v es) ++ map (Deriv v) (anyOne (rewrites eqn) es)
+-- rewrites eqn (Deriv v e) = tlrewrite eqn (Deriv v e)
 
 -- top level rewrite, does most "meat" of the rewrites
 tlrewrite :: Equation -> Expr -> [Expr]

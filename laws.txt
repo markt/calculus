@@ -1,1 +1,5 @@
 zeros: x + 0 = x
+basic: d/dx x = 0
+cancel: x - x = 0
+product rule: d/dx (a * b) = (d/dx a) * b + a * (d/dx b)
+addition: d/dx (a+b) = (d/dx a) + (d/dx b)

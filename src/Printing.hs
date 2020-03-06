@@ -17,6 +17,7 @@ import Expressions
 instance Show Expr where
  show (Var s) = s
  show (Val i) = show i
+ show (Con v [e]) = " (" ++ init (tail (show v)) ++ " " ++ show e ++ ")"
  show (Con v es) = " (" ++ show (head es) ++ (foldl (++) "" (map (((" " ++ v ++ " ") ++) . show) (tail es))) ++ ")"
  show (Deriv v e) = "d/d" ++ show v ++ " " ++ show e
 
