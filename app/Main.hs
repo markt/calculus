@@ -6,31 +6,22 @@ import System.IO
 import Control.Monad  
 
 
-
+-- read laws from a location specified
+-- then loop by accepting user expression and applying the laws to these expressions
 readLaws :: FilePath -> IO ()
 readLaws ff = do
   contents <- readFile ff
   let lawStrings = lines contents
   let laws = map (parseL) lawStrings
-  -- putStrLn ("\n" ++ show laws)
   putStrLn ("\n\n\nWelcome to our calculus calculator!\n\nEnter an expression to be solved:")
 
   forever $ do
     x <- getLine
     let e = parseExpr x
     let calc = calculate laws e
-    -- putStrLn (showCalculation calc)
     putStrLn (show calc)
   return ()
 
 
---main = forever $ do  
---    putStr "Give me some input: "  
---    l <- getLine  
---    putStrLn $ map toUpper l  
-
-
-x = readLaws "/Users/marktaylor/cs69/calculus/laws.txt"
-
 main :: IO ()
-main = readLaws "/Users/marktaylor/cs69/calculus/laws.txt"
+main = readLaws "../calculus/laws.txt"

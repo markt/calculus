@@ -14,6 +14,25 @@ import Expressions
 
 
 
+instance Show Expr where
+ show (Var s) = s
+ show (Val i) = show i
+ show (Con v es) = " (" ++ show (head es) ++ (foldl (++) "" (map (((" " ++ v ++ " ") ++) . show) (tail es))) ++ ")"
+ show (Deriv v e) = "d/d" ++ show v ++ " " ++ show e
+
+
+instance Show Step where
+ show (Step l e) = "=   {" ++ l ++ "}\n" ++ show e ++ "\n"
+
+instance Show Calculation where
+ show (Calc e steps) = "\n" ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
+
+
+instance Show Law where
+  show (Law ln eq) = "Law " ++ ln  ++ " " ++ show eq 
+
+
+
 -- showCalculation :: Calculation -> ShowS
 -- showCalculation (Calc e steps)
 --     = showString "\n " .
