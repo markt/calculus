@@ -1,5 +1,10 @@
+zero power: x ^ 0 = 1
 zeros: x + 0 = x
-basic: d/dx x = 0
 cancel: x - x = 0
+exp rule: a ^ (b + c) = a^b * a^c
 product rule: d/dx (a * b) = (d/dx a) * b + a * (d/dx b)
 addition: d/dx (a+b) = (d/dx a) + (d/dx b)
+sin: d/dx sin a = cos a * d/dx a
+cos: d/dx cos a = (0 - sin a) * d/dx a
+ln: d/dx ln a = (1/a) * d/dx a
+basic: d/dx x = 1
