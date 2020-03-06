@@ -120,7 +120,8 @@ deriv = do {string "d/d"; v <- atom; e <- expr; return (Deriv (Var v) e)}
 -- consider only apply for unary, makeexprparser for binary
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
-  [ [ prefix "sin" (func "sin")]
+  [ [ prefix "sin" (func "sin")
+    , prefix "cos" (func "cos") ]
   , [ binary "^" (funcc "^") ]
   , [ binary  "*" (funcc "*")          --[ InfixL (prod <$ symbol "*")
     , binary  "/"  (funcc "/")  ]
@@ -179,6 +180,7 @@ match (Var v,e) = [unitSub (Var v) e]
 match (Val v1,Val v2) = [[] | v1 == v2]
 match (Con v1 e1,Con v2 e2)
   | v1==v2 = combine (map Expressions.match (zip e1 e2))
+match (Deriv v1 e1,Deriv v2 e2) = Expressions.match (e1,e2)
 match _ = []
 
 unify :: Subst -> Subst -> [Subst]
@@ -222,7 +224,9 @@ rewrites eqn (Var v) = []
 rewrites eqn (Val v) = tlrewrite eqn (Val v)
 rewrites eqn (Con v es)
        = tlrewrite eqn (Con v es)  ++  map (Con v) (anyOne (rewrites eqn) es)
+rewrites eqn (Deriv v e) = tlrewrite eqn (Deriv v e)
 
+-- top level
 tlrewrite :: Equation -> Expr -> [Expr]
 tlrewrite (e1, e2) e = [apply sub e2 | sub <- subs]
                         where subs = Expressions.match (e1,e)
