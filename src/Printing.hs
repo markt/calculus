@@ -14,33 +14,33 @@ import Expressions
 
 
 
-showCalculation :: Calculation -> ShowS
-showCalculation (Calc e steps)
-    = showString "\n " .
-      (showExpr e) .
-      showChar '\n' .
-      compose (map showStep steps)
--- compose = foldr (.) id
+-- showCalculation :: Calculation -> ShowS
+-- showCalculation (Calc e steps)
+--     = showString "\n " .
+--       (showExpr e) .
+--       showChar '\n' .
+--       compose (map showStep steps)
+-- -- compose = foldr (.) id
 
-showStep :: Step -> ShowS
-showStep (Step law e)
-    = showString "=   {" .
-      showString law .
-      showString "}\n " .
-      (showExpr e) .
-      showChar '\n'
+-- showStep :: Step -> ShowS
+-- showStep (Step law e)
+--     = showString "=   {" .
+--       showString law .
+--       showString "}\n " .
+--       (showExpr e) .
+--       showChar '\n'
 
 
 
-showExpr :: Expr -> ShowS
-showExpr (Var v) = showString v
-showExpr (Val v) = showString (show v)
-showExpr (Con f []) = showString f
-showExpr (Con f [e1,e2]) | isOp f
- = showParen True (showExpr e1 . showSpace . showString f . showSpace . showExpr e2)
-showExpr (Con f es)
- = showParen True
-    (showString f . showSpace . showSep " " (showExpr) es)
+-- showExpr :: Expr -> ShowS
+-- showExpr (Var v) = showString v
+-- showExpr (Val v) = showString (show v)
+-- showExpr (Con f []) = showString f
+-- showExpr (Con f [e1,e2]) | isOp f
+--  = showParen True (showExpr e1 . showSpace . showString f . showSpace . showExpr e2)
+-- showExpr (Con f es)
+--  = showParen True
+--     (showString f . showSpace . showSep " " (showExpr) es)
 
 
 
@@ -85,11 +85,16 @@ isOp :: [Char] -> Bool
 isOp = not . all isAlphaNum
 
 
+parseExpr :: String -> Expr
+parseExpr str = case parse expr "" str of
+    Left er -> Var "error"
+    Right e -> e
 
-parseE :: String -> IO ()
-parseE str = case parse expr "" str of
-    Left er -> putStr (errorBundlePretty er)
-    Right e -> putStrLn (showExpr e "")
+
+-- parseE :: String -> IO ()
+-- parseE str = case parse expr "" str of
+--     Left er -> putStr (errorBundlePretty er)
+--     Right e -> putStrLn (showExpr e "")
 
 -- parseE :: String -> IO ()
 -- parseE str = case parse expr "" str of

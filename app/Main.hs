@@ -16,7 +16,10 @@ readLaws ff = do
 
   forever $ do
     x <- getLine
-    putStrLn x
+    let e = parseExpr x
+    let calc = calculate laws e
+    -- putStrLn (showCalculation calc)
+    putStrLn (show calc)
   return ()
 
 
@@ -26,8 +29,7 @@ readLaws ff = do
 --    putStrLn $ map toUpper l  
 
 
-x = readLaws "/Users/rednecked_crake/laws"
+x = readLaws "/Users/marktaylor/cs69/calculus/laws.txt"
 
 main :: IO ()
-
-main = readLaws "/Users/rednecked_crake/laws"
+main = readLaws "/Users/marktaylor/cs69/calculus/laws.txt"
