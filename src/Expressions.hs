@@ -40,19 +40,21 @@ data Step = Step LawName Expr
 
 
 
--- instance Show Expr where
---   show (Var s) = "Var " ++  s
---   show (Val i) = show i
---   show (Con v es) = v ++ " (" ++ (foldl (++) "" (map ((" " ++) . show) es)) ++ ")"
+instance Show Expr where
+ show (Var s) = "Var " ++  s
+ show (Val i) = show i
+ show (Con v es) = v ++ " (" ++ (foldl (++) "" (map ((" " ++) . show) es)) ++ ")"
 
 
--- instance Show Step where
---   show (Step l e) = "= {" ++ l ++ "}\n" ++ show e ++ "\n"
+instance Show Step where
+ show (Step l e) = "= {" ++ l ++ "}\n" ++ show e ++ "\n"
 
--- instance Show Calculation where
---   show (Calc e steps) = "\n " ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
+instance Show Calculation where
+ show (Calc e steps) = "\n " ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
 
 
+instance Show Law where
+  show (Law ln eq) = "Law " ++ ln  ++ " " ++ show eq 
 
 
 type Subst = [(Expr,Expr)]

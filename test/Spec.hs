@@ -22,86 +22,96 @@ import System.IO
 -- 	lawss <- readLaws
 -- 	return lawss
 
-readLaws :: FilePath -> IO ([Law])
-readLaws f = do
-  contents <- readFile f
+
+readLaws :: FilePath -> IO ()
+readLaws ff = do
+  contents <- readFile ff
   let lawStrings = lines contents
   let laws = map (parseL) lawStrings
-  return laws
+  putStrLn ("\n" ++ show laws)
 
-extractLaws :: IO ([Law]) -> [Law]
-extractLaws io = do
-	laws <- io
-	return laws
+  --forever $ do
+  --  x <- getLine
+  --  putStrLn x
+  return ()
 
 
+--main = forever $ do  
+--    putStr "Give me some input: "  
+--    l <- getLine  
+--    putStrLn $ map toUpper l  
+
+
+x = readLaws "/Users/rednecked_crake/laws"
 
 main :: IO ()
 
-main = defaultMain (testGroup "Library Tests" [varTest,valTest,conTest,funTest,lawTest,lawsTest]) --test3, test4, test5, test6, test7, test8, test9, test10])
-varTest :: TestTree--, test2, test3, test4, test5, test6, test7, test8, test9, test10 :: TestTree
+main = readLaws "/Users/rednecked_crake/laws"
+
+-- main = defaultMain (testGroup "Library Tests" [varTest,valTest,conTest,funTest,lawTest,lawsTest]) --test3, test4, test5, test6, test7, test8, test9, test10])
+--varTest :: TestTree--, test2, test3, test4, test5, test6, test7, test8, test9, test10 :: TestTree
 
 
-{-
-    Correctness tests: 5
--}
+--{-
+--    Correctness tests: 5
+---}
 
-exampleVar :: Expr
-exampleVar = Var "f1"
+--exampleVar :: Expr
+--exampleVar = Var "f1"
 
-exampleVal :: Expr
-exampleVal = Val 1
+--exampleVal :: Expr
+--exampleVal = Val 1
 
-exampleCon :: Expr
-exampleCon = Con "*" [Var "f", Val 1]
+--exampleCon :: Expr
+--exampleCon = Con "*" [Var "f", Val 1]
 
-exampleFun :: Expr
-exampleFun = Con "sin" [Var "x"]
+--exampleFun :: Expr
+--exampleFun = Con "sin" [Var "x"]
 
-exampleLaw :: Law
-exampleLaw = Law "zeros" (Con "+" [Var "x",Val 0],Var "x")
-
-
-
-exampleExpr :: Expr
-exampleExpr = Con "+" [Con "+" [Var "x", Val 0], Var "y"]
-
--- exampleSubst :: Subst
--- exampleSubst = Subst [(Var "x",(Con "+" [Var "x", Val 0]))]
-
-lawList :: [Law]
-lawList = extractLaws (readLaws "laws.txt")
+--exampleLaw :: Law
+--exampleLaw = Law "zeros" (Con "+" [Var "x",Val 0],Var "x")
 
 
 
-parseG :: String -> Expr
-parseG str = case runParser expr "" str of
-    Left er -> Var []
-    Right e -> e
+--exampleExpr :: Expr
+--exampleExpr = Con "+" [Con "+" [Var "x", Val 0], Var "y"]
+
+---- exampleSubst :: Subst
+---- exampleSubst = Subst [(Var "x",(Con "+" [Var "x", Val 0]))]
+
+--lawList :: [Law]
+--lawList = extractLaws (readLaws "laws.txt")
 
 
--- parseL :: String -> Law
--- parseL str = case runParser law "" str of
---     Left er -> Law [] (Var [], Var [])
---     Right e -> e
 
-varTest =
-  LC.testProperty "var test" (exampleVar == (parseG "f1"))
+--parseG :: String -> Expr
+--parseG str = case runParser expr "" str of
+--    Left er -> Var []
+--    Right e -> e
 
-valTest =
-  LC.testProperty "val test" (exampleVal == (parseG "1"))
 
-conTest =
-  LC.testProperty "con test" (exampleCon == (parseG "(f * 1)"))
+--parseL :: String -> Law
+--parseL str = case runParser law "" str of
+--   Left er -> Law [] (Var [], Var [])
+--   Right e -> e
 
-funTest =
-  LC.testProperty "fun test" (exampleFun == (parseG "sin x"))
+--varTest =
+--  LC.testProperty "var test" (exampleVar == (parseG "f1"))
 
-lawTest =
-  LC.testProperty "law test" (exampleLaw == (parseL "zeros: x + 0 = x"))
+--valTest =
+--  LC.testProperty "val test" (exampleVal == (parseG "1"))
 
-lawsTest =
-  LC.testProperty "laws test" (lawList == [exampleLaw])
+--conTest =
+--  LC.testProperty "con test" (exampleCon == (parseG "(f * 1)"))
 
--- lawNameTest =
---   LC.testProperty "printing lawName test" ((showLaw exampleLaw) == (showString "zeros"))
+--funTest =
+--  LC.testProperty "fun test" (exampleFun == (parseG "sin x"))
+
+--lawTest =
+--  LC.testProperty "law test" (exampleLaw == (parseL "zeros: x + 0 = x"))
+
+--lawsTest =
+--  LC.testProperty "laws test" (lawList == [exampleLaw])
+
+---- lawNameTest =
+----   LC.testProperty "printing lawName test" ((showLaw exampleLaw) == (showString "zeros"))
