@@ -7,7 +7,7 @@ import Text.Megaparsec
 import Expressions
 import Printing
 import System.IO
-
+import Control.Monad  
 
 
 -- readLaws :: IO ([Law])
@@ -21,32 +21,6 @@ import System.IO
 -- extractLaws = do
 -- 	lawss <- readLaws
 -- 	return lawss
-
-
-readLaws :: FilePath -> IO ()
-readLaws ff = do
-  contents <- readFile ff
-  let lawStrings = lines contents
-  let laws = map (parseL) lawStrings
-  putStrLn ("\n" ++ show laws)
-
-  --forever $ do
-  --  x <- getLine
-  --  putStrLn x
-  return ()
-
-
---main = forever $ do  
---    putStr "Give me some input: "  
---    l <- getLine  
---    putStrLn $ map toUpper l  
-
-
-x = readLaws "/Users/rednecked_crake/laws"
-
-main :: IO ()
-
-main = readLaws "/Users/rednecked_crake/laws"
 
 -- main = defaultMain (testGroup "Library Tests" [varTest,valTest,conTest,funTest,lawTest,lawsTest]) --test3, test4, test5, test6, test7, test8, test9, test10])
 --varTest :: TestTree--, test2, test3, test4, test5, test6, test7, test8, test9, test10 :: TestTree
