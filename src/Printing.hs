@@ -13,30 +13,32 @@ import qualified Text.Megaparsec.Char.Lexer as L
 import Expressions
 
 
--- showCalculation :: Calculation -> ShowS
--- showCalculation (Calc e steps)
---     = showString "\n " .
---       (showExpr e) .
---       showChar '\n' .
---       compose (map showStep steps)
--- -- compose = foldr (.) id
+showCalculation :: Calculation -> ShowS
+showCalculation (Calc e steps)
+    = showString "\n " .
+      (showExpr e) .
+      showChar '\n' .
+      compose (map showStep steps)
+-- compose = foldr (.) id
 
--- showStep :: Step -> ShowS
--- showStep (Step law e)
---     = showString "=   {" .
---       showString law .
---       showString "}\n " .
---       (showExpr e) .
---       showChar '\n'
+showStep :: Step -> ShowS
+showStep (Step law e)
+    = showString "=   {" .
+      showString law .
+      showString "}\n " .
+      (showExpr e) .
+      showChar '\n'
 
 
 
--- showExpr :: Expr -> ShowS
--- showExpr (Var v) = showString v
--- showExpr (Val v) = showString (show v)
--- showExpr (Con f []) = showString f
--- showExpr (Con f [e1,e2]) | isOp f
---  = showParen True (showExpr e1 . showSpace . showString f . showSpace . showExpr e2)
+showExpr :: Expr -> ShowS
+showExpr (Var v) = showString v
+showExpr (Val v) = showString (show v)
+showExpr (Con f []) = showString f
+showExpr (Con f [e]) = showString f . showSpace . showExpr e
+showExpr (Con f [e1,e2]) | isOp f
+ = showParen True (showExpr e1 . showSpace . showString f . showSpace . showExpr e2)
+showExpr (Deriv v e) = showString "d/d" . showString v . showSpace . showExpr e
 -- showExpr (Con f es)
 --  = showParen True
 --     (showString f . showSpace . showSep " " (showExpr) es)
