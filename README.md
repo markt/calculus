@@ -1,14 +1,27 @@
 # Calculus
 
-We plan to use a module structure for the project. `expressions.hs` will contain all the types, printing functions, and parsers for expressions. `paren.hs` will contain all the general parsers. Generic code will be located in `utilities.hs`. `/test` will contain all the testing code
+Welcome to our Calculus calculator!
+
+Our package is a command line tool that takes in user input in the form of expressions and outputs solved expressions. Calculations are performed according to laws specified in `laws.txt`. As a calculation is performed, each intermediate step is shown and the rule applied is listed.
 
 
-## Laws
 
-```
-data Law = Law String Equation
-type Equation = (Expr,Expr)
-```
+## Usage
+
+After installing the package, simply execute `stack run` to start the program. Then enter in any calculus to solved!
+
+For example, to calculate the derivate of `x ^ 5` by `x` run `d/dx x ^ 5`.
+
+
+
+## Testing
+
+To test the package, run `stack test`. Running `stack ghci` allows for the different functions of the package to be tested.
+
+
+
+## Package Structure
+We use a module structure for the project. `Expressions.hs` contains all the types, printing functions, and parsers for expressions. `Parsing.hs` contains all the general parsers. Generic code is located in `Utilities.hs`. `Printing.hs` contains all the functions used to neatly print calculations. `/test` will contain all the testing code.
 
 
 
