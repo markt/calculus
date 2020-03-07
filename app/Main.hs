@@ -52,7 +52,7 @@ readLaws ff = do
   contents <- readFile ff
   let lawStrings = lines contents
   
-  putStrLn ("\n\n\nWelcome to our calculus calculator!\n\nEnter an expression to be solved:")
+  putStrLn ("\n\n\nWelcome to our calculus calculator!\n\n\nEnter an expression to be solved:\n")
 
   forever $ do
     x <- getLine
@@ -61,9 +61,10 @@ readLaws ff = do
     let orig_order_calc = calculate laws e
     let calculations = ((lenOfCalc orig_order_calc, orig_order_calc):(sample 5 laws e (mkStdGen 0)))
     let lengths_of_steps = Prelude.map (show . fst) calculations
-    let str = "The lengths of each respective shuffled law calculation (first calculation uses unshuffled order): " ++ head lengths_of_steps  ++ (Prelude.foldl (++) "" $ Prelude.map (", " ++ ) $ tail lengths_of_steps)
+    let str = "\nThe lengths of each respective shuffled law calculation (first calculation uses unshuffled order): " ++ head lengths_of_steps  ++ (Prelude.foldl (++) "" $ Prelude.map (", " ++ ) $ tail lengths_of_steps)
     putStrLn str
     putStrLn ((showCalculation (snd $ minimum' calculations)) "")
+    putStrLn ("\n\n\nEnter another expression to be solved:\n")
 
 
   return ()
