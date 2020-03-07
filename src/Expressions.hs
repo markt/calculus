@@ -292,7 +292,7 @@ eval (Con v [Val v1, Val v2])
   | v == "*" = (Val (v1 * v2))
   | v == "^" = (Val (v1 ^ v2))
 eval (Con "*" [Val v1, Con v (x:xs)])
-  |  isVal x = Con v (map eval ((Val ((vall x)*v1)):xs))
+  |  isVal x = eval (Con v ((Val ((vall x)*v1)):xs))
 eval (Con v ls) = Con v (map eval ls)
 eval e = e
 
