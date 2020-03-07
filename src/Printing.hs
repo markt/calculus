@@ -19,7 +19,6 @@ showCalculation (Calc e steps)
       (showExpr e) .
       showString "\n\n" .
       compose (map showStep steps)
--- compose = foldr (.) id
 
 showStep :: Step -> ShowS
 showStep (Step law e)
