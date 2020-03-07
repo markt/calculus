@@ -10,7 +10,9 @@ import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
 import Data.Functor.Identity
 
-type Parser = Parsec Void String
+import Parsing
+import Utilities
+
 
 
 -- Datatypes
@@ -26,7 +28,7 @@ type LawName = String
 type Equation = (Expr, Expr)
 
 data Calculation = Calc Expr [Step] deriving (Eq, Show)
-data Step = Step LawName Expr deriving (Eq)
+data Step = Step LawName Expr deriving (Eq, Show)
 
 type Subst = [(Expr,Expr)]
 
@@ -40,26 +42,6 @@ unitSub v e = [[(v,e)]]
 
 
 -- Parsing
-
--- parse white space and comments
-sc :: Parser ()
-sc = L.space
-  space1                         -- (2)
-  (L.skipLineComment "//")       -- (3)
-  (L.skipBlockComment "/*" "*/") -- (4)
-
-
--- parse token
-lexeme :: Parser a -> Parser a
-lexeme = L.lexeme sc
-
--- parse symbols
-symbol :: String -> Parser String
-symbol = L.symbol sc
-
--- parse any string between parenthesis
-parens :: Parser a -> Parser a
-parens = between (symbol "(") (symbol ")")
 
 -- parse expr
 term :: Parser Expr
@@ -81,17 +63,9 @@ pInteger = Val <$> lexeme L.decimal
 expr :: Parser Expr
 expr = makeExprParser term operatorTable <?> "expression"
 
--- parse variable
-var :: Parser String
-var = ((:) <$> letterChar <*> many alphaNumChar) <* space
-
 -- parse derivative
 deriv :: Parser Expr
-deriv = do {_ <- string "d/d"; v <- atom; e <- expr; return (Deriv v e)}
-
--- parser that parses any string until char c
-upto :: Char -> Parser String
-upto c = (char c *> return []) <|> ((:) <$> anySingle <*> upto c)
+deriv = do {_ <- string "d/d"; v <- var; e <- expr; return (Deriv v e)}
 
 -- law parser
 law :: Parser Law
@@ -167,12 +141,6 @@ unifyAll = foldr f [emptySub]
 combine :: [[Subst]] -> [Subst]
 combine = concatMap unifyAll . cp
 
--- cartesian product of list of lists
-cp :: [[a]] -> [[a]]
-cp [] = [[]]
-cp (xs:xss) = [x:ys | x <- xs, ys <- yss]
-                 where yss = cp xss
-
 
 -- once we found a substition, apply the right side of the law to the expression we are computing
 apply :: Subst -> Expr -> Expr
@@ -203,16 +171,6 @@ rewrites eqn (Deriv v e)
 tlrewrite :: Equation -> Expr -> [Expr]
 tlrewrite (e1, e2) e = [apply sub e2 | sub <- subs]
                         where subs = Expressions.match (e1,e)
-
-
-
--- applies a function that object of type 'a' and returns a list of objects of type 'a' ([f1(a), ..., fn(a)]) and then 
--- applies that function to a list of objects of type 'a', [a],  x = [x1,x2,x3,...,xn]
--- as it does so, it returns a separate list for each elem within list x, e.g. [f1(x1), x2, x3, ..., xn] ++  [f2(x1), x2, x3, ..., xn] ++ ...
-anyOne :: (a -> [a]) -> [a] -> [[a]]
-anyOne _ []     = []
-anyOne f (x:xs) = [x':xs | x' <- f x] ++
-                  [x:xs' | xs' <- anyOne f xs]
 
 
 
