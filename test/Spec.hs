@@ -10,7 +10,7 @@ import System.IO
 import Control.Monad  
 
 
-main = defaultMain (testGroup "Library Tests" [varTest,valTest,conTest,funTest,lawTest,lawNameTest])
+main = defaultMain (testGroup "Library Tests" [varTest,valTest,conTest,funTest,lawTest,lawNameTest, matchTest, unifyTest])
 varTest :: TestTree
 
 
@@ -77,3 +77,25 @@ lawTest =
 
 lawNameTest =
  LC.testProperty "calc test" ((calculate lawList exampleCalcExpr) == exampleCalc)
+
+
+
+drv1 = Deriv ("x") (Con "+" [Var "x", Var "y"])
+drv2 = Deriv ("y") (Con "+" [Var "x", Con "*" [Val 2, Var "y"]])
+
+
+
+
+matchTest = 
+ LC.testProperty "match test, should return nothing" (Expressions.match (drv1,drv2) == [])
+
+sub1 = [(Var "x", (Con "+" [Var "x", Val 1]))]
+sub2 = [(Var "x", (Con "+" [Var "x", Val 2]))]
+
+unifyTest = 
+ LC.testProperty "unify test, should return nothing" ((unify sub1 sub2) == [])
+
+
+
+
+
