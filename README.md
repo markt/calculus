@@ -27,6 +27,11 @@ We added special function ```eval``` to simplify our derivations further. Suppos
 Additionally, we simplify the parenthesized expressions of the type ```a*(b*(c*(...(n*expr))))```, where ```a, b, c, ..., n``` are constants, to ```prod*expr```, where ```prod = a*b*c*...*n```.
 
 
+### Shuffled Laws
+
+After endless shuffling around of laws, we decided to play with our law order application by adding an element of randomness. We apply our regular order of laws, once, and then we shuffle the laws within a list ```n``` times, and for each try we redo the calculation. The shortest calculation (as measured by number of steps) gets displayed. Our short testing did not reveal any significant advantages to our method, but we are hopeful that more thorough testing using a greater list of laws on a more complex expression yields a better result.
+
+
 ### Simplifying Laws
 
 
