@@ -21,36 +21,12 @@ data Expr
     | Con String [Expr]
     | Deriv String Expr deriving (Eq,Show)
 
-
-{-
-
-instance Show Expr where
- show (Var s) = s
- show (Val i) = show i
- show (Con v [e]) = " (" ++ init (tail (show v)) ++ " " ++ show e ++ ")"
- show (Con v es) = " (" ++ show (head es) ++ (foldl (++) "" (map (((" " ++ v ++ " ") ++) . show) (tail es))) ++ ")"
- show (Deriv v e) = "d/d" ++ show v ++ " " ++ show e
--}
-
-instance Show Step where
- show (Step l e) = "=   {" ++ l ++ "}\n" ++ show e ++ "\n"
-
--- instance Show Calculation where
- -- show (Calc e steps) = "\n" ++ show e ++ "\n" ++ (foldl (++) "" (map show steps))
-
-
-instance Show Law where
-  show (Law ln eq) = "Law " ++ ln  ++ " " ++ show eq 
-
-
 data Law = Law LawName Equation deriving (Eq)
 type LawName = String
 type Equation = (Expr, Expr)
 
-
 data Calculation = Calc Expr [Step] deriving (Eq, Show)
 data Step = Step LawName Expr deriving (Eq)
-
 
 type Subst = [(Expr,Expr)]
 
@@ -63,9 +39,7 @@ unitSub (Var p) _ | p == "p" || p=="q" = []
 unitSub v e = [[(v,e)]]
 
 
-
 -- Parsing
-
 
 -- parse white space and comments
 sc :: Parser ()
@@ -92,7 +66,7 @@ term :: Parser Expr
 term = deriv
        <|> parens expr
        <|> pInteger
-       <|> (atom >>= more)
+       <|> (var >>= more)
        where
         more v@(_:d:_)
           | isDigit d = return (Var v)
@@ -108,8 +82,8 @@ expr :: Parser Expr
 expr = makeExprParser term operatorTable <?> "expression"
 
 -- parse variable
-atom :: Parser String
-atom = ((:) <$> letterChar <*> many alphaNumChar) <* space
+var :: Parser String
+var = ((:) <$> letterChar <*> many alphaNumChar) <* space
 
 -- parse derivative
 deriv :: Parser Expr
@@ -127,26 +101,25 @@ law = do {name <- upto ':'; space; e1 <- expr; space; _ <- char '='; space; e2 <
 -- operators we support
 operatorTable :: [[Operator Parser Expr]]
 operatorTable =
-  [ [ prefix "sin" (func "sin")
-    , prefix "cos" (func "cos")
-    , prefix "ln" (func "ln") 
-    , prefix "-" (func "-")]
-  , [ binary "^" (funcc "^") ]
-  , [ binary  "*" (funcc "*")          --[ InfixL (prod <$ symbol "*")
-    , binary  "/"  (funcc "/")  ]
-  , [ binary  "+"  (funcc "+")
-    , binary  "-"  (funcc "-") ]
+  [ [ prefix "sin" (prefixFunc "sin")
+    , prefix "cos" (prefixFunc "cos")
+    , prefix "ln" (prefixFunc "ln") 
+    , prefix "-" (prefixFunc "-")]
+  , [ binary "^" (binaryFunc "^") ]
+  , [ binary  "*" (binaryFunc "*")
+    , binary  "/"  (binaryFunc "/")  ]
+  , [ binary  "+"  (binaryFunc "+")
+    , binary  "-"  (binaryFunc "-") ]
   ]
 
 
 -- function for prefixes
-func::String -> Expr -> Expr
-func name a = Con name [a]
+prefixFunc::String -> Expr -> Expr
+prefixFunc name a = Con name [a]
 
 -- function for binary func
-
-funcc::String -> Expr -> Expr -> Expr
-funcc name a b = Con name [a,b]
+binaryFunc::String -> Expr -> Expr -> Expr
+binaryFunc name a b = Con name [a,b]
 
 binary :: String
           -> (a -> a -> a) -> Operator (ParsecT Void String Identity) a
@@ -279,7 +252,7 @@ eval (Con "*" [Val v1, Con v (x:xs)])
 eval (Con v ls) = Con v (map eval ls)
 eval e = e
 
--- return final step of the calculation?
+-- return final step of the calculation
 manyStep :: (Expr -> [Step]) -> Expr -> [Step]
 manyStep rws e
   = if null stepss then []
@@ -290,5 +263,3 @@ manyStep rws e
 -- returns expr within a Step
 unpackStep :: Step -> Expr
 unpackStep (Step _ e) = e
-
-
