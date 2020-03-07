@@ -130,7 +130,8 @@ operatorTable :: [[Operator Parser Expr]]
 operatorTable =
   [ [ prefix "sin" (func "sin")
     , prefix "cos" (func "cos")
-    , prefix "ln" (func "ln") ]
+    , prefix "ln" (func "ln") 
+    , prefix "-" (func "-")]
   , [ binary "^" (funcc "^") ]
   , [ binary  "*" (funcc "*")          --[ InfixL (prod <$ symbol "*")
     , binary  "/"  (funcc "/")  ]
@@ -257,12 +258,41 @@ calculate laws e = Calc e (manyStep rws e)
                   e' <- rewrites eqn e,
                   e' /= e]
 
+isVal :: Expr -> Bool
+isVal (Val _) = True
+isVal _ = False
+
+pmm :: Expr -> Bool
+pmm (Con v es) = v == "+"
+
+vall:: Expr -> Int
+vall (Val x) = x
+
+
+
+
+--hasSameNum:: Expr -> [Int]
+--hasSameNum (Con v [e1,e2]) = if v == "*"
+--                             then if isVal e1 then [vall e1] 
+--                                  else [vall e2]
+--                             else []
+--hasSameNum _ = []                   
+ 
+--sortExprList:: Expr -> [Int]
+--sortExprList (Var _) = []
+--sortExprList (Val _) = []
+--sortExprList (Con v [e1,e2]) = sortExprList e1 ++ (hasSameNum e2) 
+--sortExprList (Deriv s e) =  sortExprList e
+
+
 eval :: Expr -> Expr
 eval (Deriv s e) = Deriv s (eval e)
 eval (Con v [Val v1, Val v2])
   | v == "+" = (Val (v1 + v2))
   | v == "*" = (Val (v1 * v2))
   | v == "^" = (Val (v1 ^ v2))
+eval (Con "*" [Val v1, Con v (x:xs)])
+  |  isVal x = Con v (map eval ((Val ((vall x)*v1)):xs))
 eval (Con v ls) = Con v (map eval ls)
 eval e = e
 
