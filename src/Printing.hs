@@ -15,19 +15,19 @@ import Expressions
 
 showCalculation :: Calculation -> ShowS
 showCalculation (Calc e steps)
-    = showString "\n " .
+    = showString "\n\n  " .
       (showExpr e) .
-      showChar '\n' .
+      showString "\n\n" .
       compose (map showStep steps)
 -- compose = foldr (.) id
 
 showStep :: Step -> ShowS
 showStep (Step law e)
-    = showString "=   {" .
+    = showString "= {" .
       showString law .
-      showString "}\n " .
+      showString "}\n\n  " .
       (showExpr e) .
-      showChar '\n'
+      showString "\n\n"
 
 
 
