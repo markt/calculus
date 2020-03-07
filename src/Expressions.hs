@@ -164,11 +164,7 @@ match (Var v,e) = unitSub (Var v) e
 match (Val v1,Val v2) = [[] | v1 == v2]
 match (Con v1 e1,Con v2 e2)
   | v1==v2 = combine (map Expressions.match (zip e1 e2))
--- match (Deriv v1 e1,Deriv v2 e2) = map (derivWrap v1 v2) (Expressions.match (e1,e2))
-  -- [ [(Deriv v1 s1, Deriv v2 s2)] | [(s1,s2)]<-(Expressions.match (e1,e2))]
 match (Deriv v1 es1, Deriv v2 es2) = [varSubs ++ exprSubs | varSubs <- varMatch v1 v2, exprSubs <- Expressions.match (es1,es2), compatible varSubs exprSubs]
--- match (Deriv v1 es1,Deriv v2 es2)
---    = combine (map Expressions.match (zip es1 es2))
 match _ = []
 
 
@@ -213,8 +209,6 @@ apply sub (Deriv v e) = Deriv v (apply sub e)
 -- apply sub (Deriv v es) = error "Cannot do subst in deriv yet (line 201)"
 apply sub (Var e) = binding sub (Var e)
 
--- extractV :: Subst -> String
--- extractV sub = 
 
 -- looks up a in [(a,b)], and then if found returns b, otherwise throws an error
 binding :: Subst -> Expr -> Expr
@@ -261,20 +255,18 @@ calculate laws e = Calc e (manyStep rws e)
                   e' <- rewrites eqn ee,
                   e' /= ee]
 
+-- checks whether expr is Val
 isVal :: Expr -> Bool
 isVal (Val _) = True
 isVal _ = False
 
-isPlus :: Expr -> Bool
-isPlus (Con v _) = v == "+"
-isPlus _ = False
-
+-- returns a value contained within Val, since we have other possible expressions, I had to resort to returning a list
 vall:: Expr -> [Int]
 vall (Val x) = [x]
 vall _ = []
 
 
-
+-- shortens expressions by evaluation expressions that only consist of values
 eval :: Expr -> Expr
 eval (Deriv s e) = Deriv s (eval e)
 eval (Con v [Val v1, Val v2])

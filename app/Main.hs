@@ -12,6 +12,7 @@ fisherYatesStep (m, gen) (i, x) = ((insert j x . insert i (m ! j)) m, gen')
   where
     (j, gen') = randomR (0, i) gen
 
+-- Random shuffler of lists
 fisherYates :: RandomGen g => g -> [a] -> ([a], g)
 fisherYates gen [] = ([], gen)
 fisherYates gen l = 
@@ -21,16 +22,19 @@ fisherYates gen l =
     numerate = zip [1..]
     initial x gen = (singleton 0 x, gen)
 
+-- returns number of steps within Calculation
 lenOfCalc :: Calculation -> Int
 lenOfCalc (Calc e steps) = length steps
 
 
+-- calculates steps N times, each time shuffling the list of laws
 sample:: RandomGen g =>  Int -> [Law] -> Expr -> g -> [(Int, Calculation)]
 sample 0 _ _ _ = []
 sample n laws e gen = (lenOfCalc x, x):(sample (n-1) laws e (snd res))
        where x = calculate (fst $ res) e
              res = fisherYates gen laws
 
+-- returns a min value tuple, where t is the value used for ordering
 minimum' :: Ord t => [(t, a)] -> (t, a)
 minimum' []     = error "minimum of empty list"
 minimum' (x:xs) = minTail x xs
