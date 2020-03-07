@@ -51,6 +51,8 @@ executable calculus-exe
     , megaparsec
     , parser-combinators
     , text
+    , random
+    , containers
   default-language: Haskell2010
 
 test-suite calculus-test

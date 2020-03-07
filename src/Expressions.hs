@@ -269,24 +269,10 @@ isPlus :: Expr -> Bool
 isPlus (Con v _) = v == "+"
 isPlus _ = False
 
-vall:: Expr -> Int
-vall (Val x) = x
-vall _ = -999999999
+vall:: Expr -> [Int]
+vall (Val x) = [x]
+vall _ = []
 
-
-
---hasSameNum:: Expr -> [Int]
---hasSameNum (Con v [e1,e2]) = if v == "*"
---                             then if isVal e1 then [vall e1] 
---                                  else [vall e2]
---                             else []
---hasSameNum _ = []                   
- 
---sortExprList:: Expr -> [Int]
---sortExprList (Var _) = []
---sortExprList (Val _) = []
---sortExprList (Con v [e1,e2]) = sortExprList e1 ++ (hasSameNum e2) 
---sortExprList (Deriv s e) =  sortExprList e
 
 
 eval :: Expr -> Expr
@@ -296,7 +282,7 @@ eval (Con v [Val v1, Val v2])
   | v == "*" = (Val (v1 * v2))
   | v == "^" = (Val (v1 ^ v2))
 eval (Con "*" [Val v1, Con v (x:xs)])
-  |  isVal x = eval (Con v ((Val ((vall x)*v1)):xs))
+  |  isVal x = eval (Con v ((Val (head (vall x)*v1)):xs))
 eval (Con v ls) = Con v (map eval ls)
 eval e = e
 
