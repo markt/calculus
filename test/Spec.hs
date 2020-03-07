@@ -10,7 +10,7 @@ import System.IO
 import Control.Monad  
 
 
-main = defaultMain (testGroup "Library Tests" [varTest,valTest,conTest,funTest,lawTest,lawNameTest, matchTest, unifyTest])
+main = defaultMain (testGroup "Library Tests" [varTest,valTest,conTest,funTest,lawTest,lawNameTest, matchTest, unifyTest, applyTest, tlrewriteTest, calculateTest, evalTest1, evalTest2])
 varTest :: TestTree
 
 
@@ -96,6 +96,50 @@ unifyTest =
  LC.testProperty "unify test, should return nothing" ((unify sub1 sub2) == [])
 
 
+sub = [(Var "x", Con "+" [Var "y", Val 2])]
+e2 = Con "*" [Var "x", Val 1]
+
+
+final_e2 = Con "*" [Con "+" [Var "y", Val 2],  Val 1]
+
+
+applyTest = 
+ LC.testProperty "apply test" ((apply sub e2) == final_e2)
 
 
 
+laww = (Deriv "x" (Var "x"), Val 1)
+
+
+tlrewriteTest = 
+ LC.testProperty "tlrewrite test" ((tlrewrite laww (Deriv "y" (Var "y")))  == [Val 1])
+
+
+law1 = Law "specific const" (Deriv "x" (Val 1), Val 0)
+law2 = Law "simple deriv" (Deriv "x" (Var "x"), Val 1)
+law3 = Law "deriv sum" (Deriv "x" (Con "+" [Var "a", Var "b"]) , Con "+" [Deriv "x" (Var "a"),  Deriv "x" (Var "b")])
+
+laws = [law3, law2, law1]
+
+exprr = Deriv "x" (Con "+" [Val 1, Var "x"])
+
+
+extractExprFromStep :: Step -> Expr
+extractExprFromStep (Step _ e) = e 
+
+extractFinalStep :: Calculation -> Expr
+extractFinalStep (Calc e steps) = extractExprFromStep (last steps)
+
+
+calculateTest = 
+    LC.testProperty "calculate test" ((extractFinalStep (calculate laws exprr)) == (Val 1))
+
+
+
+evalTest1 = 
+    LC.testProperty "eval test 6*(5*(4*(2x)))" ((eval (Con "*" [Val 6,Con "*" [Val 5,Con "*" [Val 4,Con "*" [Val 2,Var "x"]]]])) == (Con "*" [Val 240,Var "x"]))
+
+
+
+evalTest2 = 
+    LC.testProperty "eval test (x*(5*4)) == (x*20))" ((eval (Con "*" [Var "x",Con "*" [Val 5,Val 4]])) == (Con "*" [Var "x",Val 20]))
