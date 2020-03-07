@@ -17,14 +17,14 @@ type Equation = (Expr,Expr)
 
 ### Constants
 
-We hardcoded variables ```p```, ```q``` to represent constants. Thus, when we write ```d/dx p*x = p```, we 
+We hardcoded variables ```p```, ```q``` to represent constants and added associated code to handle constants correctly. Thus, when we write ```d/dx p*x = p```, we know that ```p``` represents a constant value, in our case an ```Int```.
 
 
 ### Evaluate
 
-We added a special function ```eval``` to simplify our derivations further. Suppose you're finding a derivative of ```x^5```. Our reasoner correctly deduces ```5*x^(5-1)```. However, this is not a very user friendly way to display the result. So ```eval``` calculates the result of ```5-1``` and inserts it in the place of the original expression. Thus, we get ```5*x^4```.
+We added special function ```eval``` to simplify our derivations further. Suppose you're finding a derivative of ```x^5```. Our reasoner correctly deduces ```5*x^(5-1)```. However, this is not a very user friendly way to display the result. So ```eval``` calculates the result of ```5-1``` and inserts it in the place of the original expression. Thus, we get ```5*x^4```.
 
-Additionally, we simplify the parenthesized expressions of the type ```a*(b*(c*(...(n*expr))))```, where ```a, b, c, ..., n``` are constants to ```prod*expr```, where ```prod = a*b*c*...*n```.
+Additionally, we simplify the parenthesized expressions of the type ```a*(b*(c*(...(n*expr))))```, where ```a, b, c, ..., n``` are constants, to ```prod*expr```, where ```prod = a*b*c*...*n```.
 
 
 ### Simplifying Laws
