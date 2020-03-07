@@ -2,17 +2,13 @@
 {-# LANGUAGE OverloadedStrings #-}
 module Expressions where
 
-import Control.Monad
 import Control.Monad.Combinators.Expr
-import Data.List (intersperse)
 import Data.Void
 import Data.Char
 import Text.Megaparsec
 import Text.Megaparsec.Char
 import qualified Text.Megaparsec.Char.Lexer as L
-import Data.Maybe
-
-
+import Data.Functor.Identity
 
 type Parser = Parsec Void String
 
@@ -58,7 +54,10 @@ data Step = Step LawName Expr
 
 type Subst = [(Expr,Expr)]
 
+emptySub :: [a]
 emptySub = []
+
+unitSub :: Expr -> Expr -> [[(Expr, Expr)]]
 unitSub (Var p) (Val l) = [[(Var p,Val l)]]
 unitSub (Var p) _ | p == "p" || p=="q" = []
 unitSub v e = [[(v,e)]]
@@ -114,7 +113,7 @@ atom = ((:) <$> letterChar <*> many alphaNumChar) <* space
 
 -- parse derivative
 deriv :: Parser Expr
-deriv = do {string "d/d"; v <- atom; e <- expr; return (Deriv v e)}
+deriv = do {_ <- string "d/d"; v <- atom; e <- expr; return (Deriv v e)}
 
 -- parser that parses any string until char c
 upto :: Char -> Parser String
@@ -122,7 +121,7 @@ upto c = (char c *> return []) <|> ((:) <$> anySingle <*> upto c)
 
 -- law parser
 law :: Parser Law
-law = do {name <- upto ':'; space; e1 <- expr; space; char '='; space; e2 <- expr; space; return (Law name (e1,e2))}
+law = do {name <- upto ':'; space; e1 <- expr; space; _ <- char '='; space; e2 <- expr; space; return (Law name (e1,e2))}
 
 
 -- operators we support
@@ -149,7 +148,13 @@ func name a = Con name [a]
 funcc::String -> Expr -> Expr -> Expr
 funcc name a b = Con name [a,b]
 
+binary :: String
+          -> (a -> a -> a) -> Operator (ParsecT Void String Identity) a
 binary  name f = InfixL  (f <$ symbol name)
+
+prefix :: String
+          -> (a -> a) -> Operator (ParsecT Void String Identity) a
+
 prefix  name f = Prefix  (f <$ symbol name)
 
 
@@ -204,7 +209,7 @@ cp (xs:xss) = [x:ys | x <- xs, ys <- yss]
 
 -- once we found a substition, apply the right side of the law to the expression we are computing
 apply :: Subst -> Expr -> Expr
-apply sub (Val v) = (Val v)
+apply _ (Val v) = (Val v)
 apply sub (Con v es) = Con v (map (apply sub) es)
 apply sub (Deriv v e) = Deriv v (apply sub e)
 -- apply sub (Deriv v es) = error "Cannot do subst in deriv yet (line 201)"
@@ -221,7 +226,7 @@ binding sub e = case (lookup e sub) of
 
 
 rewrites :: Equation -> Expr -> [Expr]
-rewrites eqn (Var v) = []
+rewrites _ (Var _) = []
 rewrites eqn (Val v) = tlrewrite eqn (Val v)
 rewrites eqn (Con v es)
        = tlrewrite eqn (Con v es)  ++  map (Con v) (anyOne (rewrites eqn) es)
@@ -240,7 +245,7 @@ tlrewrite (e1, e2) e = [apply sub e2 | sub <- subs]
 -- applies that function to a list of objects of type 'a', [a],  x = [x1,x2,x3,...,xn]
 -- as it does so, it returns a separate list for each elem within list x, e.g. [f1(x1), x2, x3, ..., xn] ++  [f2(x1), x2, x3, ..., xn] ++ ...
 anyOne :: (a -> [a]) -> [a] -> [[a]]
-anyOne f []     = []
+anyOne _ []     = []
 anyOne f (x:xs) = [x':xs | x' <- f x] ++
                   [x:xs' | xs' <- anyOne f xs]
 
@@ -253,21 +258,22 @@ steps (Calc _ s) = s
 -- apply laws to an expr, one by one in order they were written in a text file
 calculate :: [Law] -> Expr -> Calculation
 calculate laws e = Calc e (manyStep rws e)
-  where rws e = [(Step name (eval e'))
+  where rws ee = [(Step name (eval e'))
                 | Law name eqn <- laws,
-                  e' <- rewrites eqn e,
-                  e' /= e]
+                  e' <- rewrites eqn ee,
+                  e' /= ee]
 
 isVal :: Expr -> Bool
 isVal (Val _) = True
 isVal _ = False
 
-pmm :: Expr -> Bool
-pmm (Con v es) = v == "+"
+isPlus :: Expr -> Bool
+isPlus (Con v _) = v == "+"
+isPlus _ = False
 
 vall:: Expr -> Int
 vall (Val x) = x
-
+vall _ = -999999999
 
 
 
@@ -299,13 +305,13 @@ eval e = e
 -- return final step of the calculation?
 manyStep :: (Expr -> [Step]) -> Expr -> [Step]
 manyStep rws e
-  = if null steps then []
-    else step : manyStep rws (unpackStep step)
-    where steps = rws e
-          step = head steps
+  = if null stepss then []
+    else stepp : manyStep rws (unpackStep stepp)
+    where stepss = rws e
+          stepp = head stepss
 
 -- returns expr within a Step
 unpackStep :: Step -> Expr
-unpackStep (Step lawname e) = e
+unpackStep (Step _ e) = e
 
 
