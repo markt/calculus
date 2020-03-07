@@ -32,15 +32,13 @@ Additionally, we simplify the parenthesized expressions of the type ```a*(b*(c*(
 After endless shuffling around of laws, we decided to play with our law order application by adding an element of randomness. We apply our regular order of laws, once, and then we shuffle the laws within a list ```n``` times, and for each try we redo the calculation. The shortest calculation (as measured by number of steps) gets displayed. Our short testing did not reveal any significant advantages to our method, but we are hopeful that more thorough testing using a greater list of laws on a more complex expression yields a better result.
 
 
-### Simplifying Laws
-
-
-
-
-
 ### Less Steps
 
 In writing our laws, we considered the tradeoff between having fewers laws that are more general versus having a greater number of more specific laws that result in fewer steps. For instance, instead of writing two laws to remove zeros from addition expressions, `zeros add: x + 0 = x` and `zeros add2: 0 + x = x`, we could use the law `const on left add: x + p = p + x` to ensure constants always appear on the left then we only need the law `zeros add: 0 + x = x`.
 
 Ultimately, we elected to include more specific laws that result in fewer steps. While having a more concise list of laws is cleaner on our end, our aim is to provide the most useful calculator for the end user. Using a greater number of specific laws enables more succinct calculations, which is in the end users best interest.
 
+
+### Further Work
+
+We attempted to implement the application of simplifying laws to expressions before derivative laws are applied but fell short. We tried applying laws to the expression to be derived then applying laws to the full expression with the derivative, but realized our implementation was off as we disregard the steps simplifying the first expressions. To see our progress, take a look at the branch `simp_before_derive`.
