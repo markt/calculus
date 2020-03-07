@@ -111,9 +111,3 @@ parseL str = case runParser law "" str of
     Left er -> Law [] (Var [], Var [])
     Right e -> e
 
--- basically just used to demonstrate law printing
-parseLN :: String -> IO ()
-parseLN str = case runParser law "" str of
-    Left er -> putStrLn (errorBundlePretty er)
-    Right e -> putStrLn (showLaw e "")
-

@@ -19,7 +19,8 @@ readLaws ff = do
     x <- getLine
     let e = parseExpr x
     let calc = calculate laws e
-    putStrLn (show calc)
+    -- putStrLn (show calc)
+    putStrLn ((showCalculation calc) "")
   return ()
 
 

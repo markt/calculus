@@ -48,8 +48,8 @@ type LawName = String
 type Equation = (Expr, Expr)
 
 
-data Calculation = Calc Expr [Step] deriving (Show)
-data Step = Step LawName Expr
+data Calculation = Calc Expr [Step] deriving (Eq, Show)
+data Step = Step LawName Expr deriving (Eq)
 
 
 type Subst = [(Expr,Expr)]
@@ -171,8 +171,6 @@ match (Deriv v1 es1, Deriv v2 es2) = [varSubs ++ exprSubs | varSubs <- varMatch 
 --    = combine (map Expressions.match (zip es1 es2))
 match _ = []
 
--- derivWrap :: Expr -> Expr -> Subst -> Subst
--- derivWrap v1 v2 [(e1,e2)] = [(Deriv v1 e1,Deriv v2 e2)]
 
 varMatch :: String -> String -> [Subst]
 varMatch v1 v2 = unitSub (Var v1) (Var v2)
